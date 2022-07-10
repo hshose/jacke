@@ -19,5 +19,6 @@
     <module>modm:build:scons</module>
     <module>modm:processing:protothread</module>
     <module>modm:processing:timer</module>
+    <module>modm:lvgl</module>
   </modules>
 </library>

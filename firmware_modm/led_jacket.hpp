@@ -135,13 +135,7 @@ public:
             }
         }
 	}
-
-    modm::ResumableResult<void>
-    transfer()
-    {
-        return(this->leds.transfer());
-    }
-
+    
     void
 	setPixel(int16_t x, int16_t y) final
 	{

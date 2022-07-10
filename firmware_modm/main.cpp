@@ -27,8 +27,6 @@
 using namespace Board;
 
 using Output = Board::D11;
-// modm::Ws2812b<SpiMaster2, Output, 8*32> leds;
-// modm::Sk6812w<SpiMaster2, Output, 144> leds;
 
 using DmaRx = Dma1::Channel3;
 using DmaTx = Dma1::Channel4;
@@ -36,7 +34,6 @@ using SpiLed = SpiMaster2_Dma<DmaRx, DmaTx>;
 jacket::JacketBack<SpiLed, Output> jacket_back;
 
 // jacket::BeatDetection<> beat_detection;
-
 modm::ShortPeriodicTimer tmr{50ms};
 
 class JacketThread : public modm::pt::Protothread
