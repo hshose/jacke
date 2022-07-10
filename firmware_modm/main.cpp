@@ -14,78 +14,68 @@
 // #include <modm/driver/pwm/sk6812w.hpp>
 #include <modm/ui/led/tables.hpp>
 #include <modm/processing/timer.hpp>
+#include <modm/ui/color/rgb.hpp>
+#include <modm/ui/color/rgb565.hpp>
+#include <modm/processing.hpp>
+
+#include <array>
+#include <utility>
+#include <algorithm>
+
+#include "led_jacket.hpp"
 
 using namespace Board;
 
 using Output = Board::D11;
-modm::Ws2812b<SpiMaster2, Output, 8*32> leds;
+// modm::Ws2812b<SpiMaster2, Output, 8*32> leds;
 // modm::Sk6812w<SpiMaster2, Output, 144> leds;
+
+using DmaRx = Dma1::Channel3;
+using DmaTx = Dma1::Channel4;
+using SpiLed = SpiMaster2_Dma<DmaRx, DmaTx>;
+jacket::JacketBack<SpiLed, Output> jacket_back;
+
+// jacket::BeatDetection<> beat_detection;
+
 modm::ShortPeriodicTimer tmr{50ms};
+
+class JacketThread : public modm::pt::Protothread
+{
+public:
+	bool
+	update()
+	{
+		PT_BEGIN();
+		Dma1::enable();
+		jacket_back.initialize<Board::SystemClock>();
+
+		while (true)
+		{
+			jacket_back.update();
+			PT_CALL(jacket_back.leds.write());
+			timeout.restart(500ms);
+			PT_WAIT_UNTIL(timeout.isExpired());
+		}
+
+		PT_END();
+	}
+private:
+	modm::ShortTimeout timeout;
+};
+
+JacketThread jacket_thread;
 
 int
 main()
 {
 	Board::initialize();
 	LedD13::setOutput();
-	leds.initialize<Board::SystemClock>();
-
-	// constexpr uint8_t max = 254;
-	// uint8_t r=0, g=max/3, b=max/3*2;
+	// beat_detection.initialize();
 
 	while (true)
 	{
-		// for (size_t ii=0; ii < leds.size; ii++)
-		// {
-		// 	leds.setColor(ii,
-		// 				  {0xff,
-		// 				   0xff,
-		// 				   0xff});
-		// 	leds.setBrightness(ii,0x00);
-		// }
-		// leds.write();
-
 		// while(not tmr.execute()) ;
-
-		for (size_t i=0; i<leds.size; i++)
-		{
-
-			for (size_t ii=0; ii < leds.size; ii++)
-			{
-				leds.setColor(ii,
-							{0x00,
-							0x00,
-							0x00});
-				// leds.setBrightness(ii,0xff);
-			}
-			leds.setColor(i, {0xff, 0xff, 0xff});
-			leds.write();
-
-			while(not tmr.execute()) ;
-		}
-
-		// for (size_t ii=0; ii < leds.size; ii++)
-		// {
-		// 	leds.setColor(ii,
-		// 				  {0x00,
-		// 				   0x00,
-		// 				   0x00});
-		// 	// leds.setBrightness(ii,0xff);
-		// }
-		// leds.write();
-
-		// while(not tmr.execute()) ;
-
-		// 		for (size_t ii=0; ii < leds.size; ii++)
-		// {
-		// 	leds.setColor(ii,
-		// 				  {0x00,
-		// 				   0x00,
-		// 				   0x00});
-		// 	leds.setBrightness(ii,0x00);
-		// }
-		// leds.write();
-
-		// while(not tmr.execute()) ;
+		jacket_thread.update();
 		LedD13::toggle();
 	}
 

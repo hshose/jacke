@@ -12,9 +12,12 @@
   </options>
   <modules>
     <module>modm:driver:ws2812</module>
-    <module>modm:driver:sk6812</module>
+    <!-- <module>modm:driver:sk6812</module> -->
+    <module>modm:platform:dma</module>
     <module>modm:platform:spi:2</module>
     <module>modm:ui:led</module>
     <module>modm:build:scons</module>
+    <module>modm:processing:protothread</module>
+    <module>modm:processing:timer</module>
   </modules>
 </library>
