@@ -1,1 +1,9 @@
+# librecad
 *.dxf~
+
+# modm
+firmware_modm/build
+firmware_modm/modm
+firmware_modm/SConstruct
+project.xml.log
+.sconsign.dblite

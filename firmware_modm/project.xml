@@ -1,0 +1,20 @@
+<library>
+  <repositories>
+    <!-- path to modm repository -->
+    <repository>
+      <path>../../modm/repo.lb</path>
+    </repository>
+  </repositories>
+  <extends>modm:disco-f469ni</extends>
+  <options>
+    <option name="modm:build:build.path">build/</option>
+    <option name="modm:build:project.name">jacke_firmware_modm</option>
+  </options>
+  <modules>
+    <module>modm:driver:ws2812</module>
+    <module>modm:driver:sk6812</module>
+    <module>modm:platform:spi:2</module>
+    <module>modm:ui:led</module>
+    <module>modm:build:scons</module>
+  </modules>
+</library>
